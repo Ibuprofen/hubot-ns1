@@ -1,9 +1,9 @@
 # hubot
 
 
-# to run
+# To run
 
-`HUBOT_SLACK_TOKEN=$HUBOT_SLACK_TOKEN ./bin/hubot --adapter slack`
+`npm start`
 
 
 hubot is a chat bot built on the [Hubot][hubot] framework. It was
