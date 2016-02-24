@@ -6,7 +6,9 @@
   "description": "Description of company yay",
   "dependencies": {
     "hubot": "^2.18.0",
+    "hubot-darksky": "^1.0.2",
     "hubot-diagnostics": "0.0.1",
+    "hubot-forecast": "^0.5.1",
     "hubot-google-images": "^0.2.6",
     "hubot-google-translate": "^0.2.0",
     "hubot-help": "^0.1.3",
