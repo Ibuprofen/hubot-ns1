@@ -9,9 +9,7 @@
 #   HUBOT_WUNDERGROUND_USE_METRIC Set to arbitrary value to use forecasts with metric system units
 #
 # Commands:
-#   hubot weather me <location> - short-term forecast
-#   hubot satellite me <location> - get a recent satellite image
-#   hubot weathercam me <location> - get a weather webcam image near location
+#   hubot radar me <location> - recent radar image
 #
 # Notes:
 #   location can be zip code, ICAO/IATA airport code, state/city (CA/San_Franciso).
@@ -20,17 +18,10 @@
 #   alexdean
 
 module.exports = (robot) ->
-  robot.respond /weather (me|at|for|in)? ?(.*)$/i, (msg) ->
-    location = msg.match[2]
-    get_data robot, msg, location, 'forecast', location.replace(/\s/g, '_'), send_forecast, 60*60*2
 
-  robot.respond /satellite (me|at|for|in)? ?(.*)$/i, (msg) ->
+  robot.respond /radar (me|at|for|in)? ?(.*)$/i, (msg) ->
     location = msg.match[2]
-    get_data robot, msg, location, 'satellite', location.replace(/\s/g, '_'), send_satellite, 60*10
-
-  robot.respond /weathercam (me|at|for|in)? ?(.*)$/i, (msg) ->
-    location = msg.match[2]
-    get_data robot, msg, location, 'webcams', location.replace(/\s/g, '_'), send_webcam, 60*30
+    get_data robot, msg, location, 'radar', location.replace(/\s/g, '_'), send_radar, 60*10
 
 # check cache, get data, store data, invoke callback.
 get_data = (robot, msg, location, service, query, cb, lifetime, stack=0) ->
@@ -51,10 +42,11 @@ get_data = (robot, msg, location, service, query, cb, lifetime, stack=0) ->
       return
     # get new data
     msg
-      .http("http://api.wunderground.com/api/#{process.env.HUBOT_WUNDERGROUND_API_KEY}/#{service}/q/#{encodeURIComponent query}.json")
+     .send("http://api.wunderground.com/api/#{process.env.HUBOT_WUNDERGROUND_API_KEY}/animatedradar/q/#{encodeURIComponent query}.gif?num=15&smooth=0&width=500&height=500&radius=60&newmaps=1&delay=25&noclutter=1")
+###
       .get() (err, res, body) ->
         # check for a non-200 response. cache it for some short amount of time && msg.send 'unavailable'
-        data = JSON.parse(body)
+        data = body #JSON.parse(body)
 
         # probably an unknown place
         if data.response?.error?
@@ -80,7 +72,8 @@ get_data = (robot, msg, location, service, query, cb, lifetime, stack=0) ->
           robot.brain.data.wunderground[cache_key].retrieved = new Date
           robot.brain.data.wunderground[cache_key].lifetime = lifetime
           cb msg, location, robot.brain.data.wunderground[cache_key]
-
+###
+#
 send_forecast = (msg, location, data) ->
   report = data.forecast.txt_forecast.forecastday[0]
   useMetric = process.env.HUBOT_WUNDERGROUND_USE_METRIC?
